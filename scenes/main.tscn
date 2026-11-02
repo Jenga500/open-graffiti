@@ -1,0 +1,116 @@
+[gd_scene format=3 uid="uid://cujy31ypcw330"]
+
+[ext_resource type="Script" uid="uid://ll382rmu1pbt" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="2_startxr"]
+[ext_resource type="Script" uid="uid://qusstkujyro0" path="res://scripts/graffiti_wall.gd" id="3_wall"]
+[ext_resource type="PackedScene" uid="uid://diyu06cw06syv" path="res://addons/godot-xr-tools/player/player_body.tscn" id="4_body"]
+[ext_resource type="PackedScene" uid="uid://bl2nuu3qhlb5k" path="res://addons/godot-xr-tools/functions/movement_direct.tscn" id="5_direct"]
+[ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="6_turn"]
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="7_lhand"]
+[ext_resource type="Script" uid="uid://b2ywlnqbniis7" path="res://scripts/palette_hand.gd" id="8_palette"]
+[ext_resource type="Script" uid="uid://gowhnaowrlge" path="res://scripts/spray_can.gd" id="9_spray"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+sky_top_color = Color(0.32, 0.45, 0.68, 1)
+sky_horizon_color = Color(0.72, 0.68, 0.62, 1)
+ground_horizon_color = Color(0.72, 0.68, 0.62, 1)
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_mat")
+
+[sub_resource type="Environment" id="env"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="floor_shape"]
+size = Vector3(30, 1, 30)
+
+[sub_resource type="PlaneMesh" id="floor_mesh"]
+size = Vector2(30, 30)
+
+[sub_resource type="StandardMaterial3D" id="floor_mat"]
+albedo_color = Color(0.26, 0.26, 0.27, 1)
+roughness = 0.95
+
+[node name="Main" type="Node3D" unique_id=1440690571]
+script = ExtResource("1_main")
+
+[node name="StartXR" parent="." unique_id=1438262133 instance=ExtResource("2_startxr")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=470345013]
+environment = SubResource("env")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1343693075]
+transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 0, 6, 0)
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=488150598]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1891389606]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("floor_shape")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=1136847117]
+mesh = SubResource("floor_mesh")
+surface_material_override/0 = SubResource("floor_mat")
+
+[node name="GraffitiWall" type="Node3D" parent="." unique_id=261871354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2)
+script = ExtResource("3_wall")
+
+[node name="HelpBoard" type="Label3D" parent="." unique_id=869134414]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -3.6, 1.6, 0.19429076)
+pixel_size = 0.002
+text = "OPEN GRAFFITI
+
+Rechts (Dose)
+  Trigger: sprühen (Druck = Menge)
+  Abstand: nah = dünn & scharf, weit = breit & weich
+  Stick: drehen (X) / Düsengröße (Y)
+  B: Undo     A halten: Wand leeren
+
+Links (Palette)
+  Stick: gehen
+  Trigger / Grip: nächste / vorige Farbe
+  Farbe oder Düse mit der Dosenspitze antippen
+  X: Undo     Y: PNG exportieren
+
+Lange auf eine Stelle sprühen = Drips!"
+font_size = 40
+outline_size = 10
+horizontal_alignment = 0
+
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=944888163]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3)
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1525163835]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=1835678344]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 1.2, -0.3)
+tracker = &"left_hand"
+pose = &"aim"
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=353688403 instance=ExtResource("7_lhand")]
+
+[node name="MovementDirect" parent="XROrigin3D/LeftController" unique_id=510036985 instance=ExtResource("5_direct")]
+strafe = true
+
+[node name="Palette" type="Node3D" parent="XROrigin3D/LeftController" unique_id=1511965317]
+transform = Transform3D(1, 0, 0, 0, 0.573576, 0.819152, 0, -0.819152, 0.573576, 0, 0.07, 0.07)
+script = ExtResource("8_palette")
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=408936217]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.2, -0.3)
+tracker = &"right_hand"
+pose = &"aim"
+
+[node name="MovementTurn" parent="XROrigin3D/RightController" unique_id=869186797 instance=ExtResource("6_turn")]
+turn_mode = 1
+
+[node name="SprayCan" type="Node3D" parent="XROrigin3D/RightController" unique_id=1547310088]
+script = ExtResource("9_spray")
+
+[node name="PlayerBody" parent="XROrigin3D" unique_id=695187254 instance=ExtResource("4_body")]
